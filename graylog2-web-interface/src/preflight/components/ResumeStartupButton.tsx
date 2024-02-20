@@ -35,9 +35,9 @@ const ResumeStartupButton = ({ setIsWaitingForStartup, children, variant, compac
   const { data: dataNodes } = useDataNodes();
 
   const onResumeStartup = useCallback(() => {
-    // eslint-disable-next-line no-alert
     if (
       dataNodes?.length ||
+      // eslint-disable-next-line no-alert
       window.confirm(
         'Are you sure you want to resume startup without a running Graylog data node? This will cause the configuration to fall back to using an Opensearch instance on localhost:9200.',
       )

@@ -84,8 +84,8 @@ const _trendDirection = (delta: number, trendPreference: TrendPreference): Trend
   }
 };
 
-// eslint-disable-next-line no-nested-ternary
 const _trendIcon = (delta: number) =>
+  // eslint-disable-next-line no-nested-ternary
   delta === 0 ? 'arrow-circle-right' : delta > 0 ? 'arrow-circle-up' : 'arrow-circle-down';
 
 const diff = (current: number | undefined, previous: number | undefined): [number, number] => {

@@ -42,7 +42,6 @@ const config = AggregationWidgetConfig.builder()
   .columnPivots(columnPivots)
   .build();
 
-// eslint-disable-next-line react/require-default-props
 const SUT = ({
   chartDataProp = chartData,
   plotConfig = config,

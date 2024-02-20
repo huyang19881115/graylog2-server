@@ -18,7 +18,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
-import { DataTable, Icon, IfPermitted, PageHeader, PaginatedList, SearchForm, OverlayTrigger } from 'components/common';
+import { DataTable, IfPermitted, PageHeader, PaginatedList, SearchForm } from 'components/common';
 import { Button, ButtonToolbar, Col, Row } from 'components/bootstrap';
 import EditPatternModal from 'components/grok-patterns/EditPatternModal';
 import BulkLoadPatternModal from 'components/grok-patterns/BulkLoadPatternModal';
@@ -28,8 +28,6 @@ import withTelemetry from 'logic/telemetry/withTelemetry';
 import { TELEMETRY_EVENT_TYPE } from 'logic/telemetry/Constants';
 
 import GrokPatternQueryHelper from './GrokPatternQueryHelper';
-
-import QueryHelper from '../common/QueryHelper';
 
 const GrokPatternsList = styled(DataTable)`
   th.name {
@@ -146,8 +144,8 @@ class GrokPatterns extends React.Component {
   };
 
   confirmedRemove = (pattern) => {
-    // eslint-disable-next-line no-alert
     if (
+      // eslint-disable-next-line no-alert
       window.confirm(
         `Really delete the grok pattern ${pattern.name}?\nIt will be removed from the system and unavailable for any extractor. If it is still in use by extractors those will fail to work.`,
       )

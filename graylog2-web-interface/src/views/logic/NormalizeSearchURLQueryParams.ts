@@ -29,8 +29,8 @@ type StreamsQuery = {
 
 export type RawQuery = (TimeRangeQueryParameter | { relative?: string }) & StreamsQuery & { q?: string };
 
-// eslint-disable-next-line no-nested-ternary
 const normalizeTimeRange = (query: {} | TimeRangeQueryParameter): TimeRange | undefined =>
+  // eslint-disable-next-line no-nested-ternary
   query && 'rangetype' in query
     ? timeRangeFromQueryParameter(query)
     : 'relative' in query

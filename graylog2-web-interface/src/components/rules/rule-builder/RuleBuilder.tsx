@@ -339,8 +339,8 @@ const RuleBuilder = () => {
               <Panel.Collapse>
                 <StyledPanelBody>
                   {rule.rule_builder.conditions.map((condition, index) => (
-                    // eslint-disable-next-line react/no-array-index-key
                     <RuleBuilderBlock
+                      // eslint-disable-next-line react/no-array-index-key
                       key={index}
                       blockDict={conditionsDict || []}
                       block={condition}
@@ -375,8 +375,8 @@ const RuleBuilder = () => {
               <Panel.Collapse>
                 <StyledPanelBody>
                   {rule.rule_builder.actions.map((action, index) => (
-                    // eslint-disable-next-line react/no-array-index-key
                     <RuleBuilderBlock
+                      // eslint-disable-next-line react/no-array-index-key
                       key={index}
                       blockDict={actionsDict || []}
                       block={action}

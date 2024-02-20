@@ -64,8 +64,8 @@ class MatchingTypeSwitcher extends React.Component {
   handleTypeChange = (newValue) => {
     const { onChange, stream } = this.props;
 
-    // eslint-disable-next-line no-alert
     if (
+      // eslint-disable-next-line no-alert
       window.confirm(
         'You are about to change how rules are applied to this stream, do you want to continue? Changes will take effect immediately.',
       )

@@ -133,7 +133,7 @@ ace.define(
           },
           {
             token: 'constant.language.escape',
-            // eslint-disable-next-line no-useless-escape
+
             regex: '<d+-d+>|[~&@]',
           },
           {

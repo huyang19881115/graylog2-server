@@ -48,8 +48,8 @@ const SimulationTrace = createReactClass({
     simulationTrace.forEach((trace, idx) => {
       // eslint-disable-next-line react/no-array-index-key
       traceEntries.push(<dt key={`${trace.time}-${idx}-title`}>{NumberUtils.formatNumber(trace.time)} &#956;s</dt>);
-      // eslint-disable-next-line react/no-array-index-key
       traceEntries.push(
+        // eslint-disable-next-line react/no-array-index-key
         <dd key={`${trace}-${idx}-description`}>
           <span>{trace.message}</span>
         </dd>,
