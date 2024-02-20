@@ -49,14 +49,14 @@ const SimulationTrace = createReactClass({
       // eslint-disable-next-line react/no-array-index-key
       traceEntries.push(<dt key={`${trace.time}-${idx}-title`}>{NumberUtils.formatNumber(trace.time)} &#956;s</dt>);
       // eslint-disable-next-line react/no-array-index-key
-      traceEntries.push(<dd key={`${trace}-${idx}-description`}><span>{trace.message}</span></dd>);
+      traceEntries.push(
+        <dd key={`${trace}-${idx}-description`}>
+          <span>{trace.message}</span>
+        </dd>,
+      );
     });
 
-    return (
-      <dl className="dl-horizontal dl-simulation-trace">
-        {traceEntries}
-      </dl>
-    );
+    return <dl className="dl-horizontal dl-simulation-trace">{traceEntries}</dl>;
   },
 });
 
