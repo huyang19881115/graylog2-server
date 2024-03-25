@@ -24,6 +24,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Provider;
 import jakarta.inject.Singleton;
 import org.graylog.datanode.Configuration;
+import org.graylog.datanode.bootstrap.preflight.DatanodeDirectoriesLockfileCheck;
 import org.graylog.datanode.configuration.DatanodeConfiguration;
 import org.graylog.datanode.metrics.ConfigureMetricsIndexSettings;
 import org.graylog.datanode.process.OpensearchConfiguration;
@@ -37,6 +38,7 @@ import org.graylog2.datanode.DataNodeLifecycleEvent;
 import org.graylog2.datanode.RemoteReindexAllowlistEvent;
 import org.graylog2.events.ClusterEventBus;
 import org.graylog2.indexer.fieldtypes.IndexFieldTypesService;
+import org.graylog2.plugin.cluster.ClusterConfigService;
 import org.graylog2.plugin.system.NodeId;
 import org.graylog2.security.CustomCAX509TrustManager;
 import org.slf4j.Logger;
@@ -58,6 +60,8 @@ public class OpensearchProcessService extends AbstractIdleService implements Pro
     private final DataNodeProvisioningService dataNodeProvisioningService;
     private final IndexFieldTypesService indexFieldTypesService;
     private final ClusterEventBus clusterEventBus;
+    private final DatanodeDirectoriesLockfileCheck lockfileCheck;
+    private final ClusterConfigService clusterConfigService;
 
 
     @Inject
@@ -72,13 +76,17 @@ public class OpensearchProcessService extends AbstractIdleService implements Pro
                                     final IndexFieldTypesService indexFieldTypesService,
                                     final ObjectMapper objectMapper,
                                     final ProcessStateMachine processStateMachine,
-                                    final ClusterEventBus clusterEventBus) {
+                                    final ClusterEventBus clusterEventBus,
+                                    final DatanodeDirectoriesLockfileCheck lockfileCheck,
+                                    final ClusterConfigService clusterConfigService) {
         this.configurationProvider = configurationProvider;
         this.eventBus = eventBus;
         this.nodeId = nodeId;
         this.dataNodeProvisioningService = dataNodeProvisioningService;
         this.indexFieldTypesService = indexFieldTypesService;
         this.clusterEventBus = clusterEventBus;
+        this.lockfileCheck = lockfileCheck;
+        this.clusterConfigService = clusterConfigService;
         this.process = createOpensearchProcess(datanodeConfiguration, trustManager, configuration, nodeService, objectMapper, processStateMachine);
         eventBus.register(this);
     }
@@ -90,7 +98,7 @@ public class OpensearchProcessService extends AbstractIdleService implements Pro
         process.addStateMachineTracer(watchdog);
         process.addStateMachineTracer(new StateMachineTransitionLogger());
         process.addStateMachineTracer(new OpensearchRemovalTracer(process, configuration.getDatanodeNodeName(), nodeId, clusterEventBus));
-        process.addStateMachineTracer(new ConfigureMetricsIndexSettings(process, configuration, indexFieldTypesService, objectMapper));
+        process.addStateMachineTracer(new ConfigureMetricsIndexSettings(process, configuration, indexFieldTypesService, objectMapper, nodeService));
         process.addStateMachineTracer(new ClusterNodeStateTracer(nodeService, nodeId));
         return process;
     }
@@ -116,7 +124,7 @@ public class OpensearchProcessService extends AbstractIdleService implements Pro
     @SuppressWarnings("unused")
     public void handlePreflightConfigEvent(DataNodeProvisioningStateChangeEvent event) {
         switch (event.state()) {
-            case STARTUP_REQUESTED -> startUp();
+            case STARTUP_REQUESTED -> this.process.start();
             case STORED -> {
                 configure();
                 dataNodeProvisioningService.changeState(event.nodeId(), DataNodeProvisioningConfig.State.STARTUP_PREPARED);
@@ -142,7 +150,14 @@ public class OpensearchProcessService extends AbstractIdleService implements Pro
         final OpensearchConfiguration config = configurationProvider.get();
         configure();
         if (config.securityConfigured()) {
-            this.process.start();
+
+            try {
+                lockfileCheck.checkDatanodeLock(config.datanodeDirectories().getDataTargetDir());
+                this.process.start();
+            } catch (Exception e) {
+                LOG.error("Could not start up data node", e);
+            }
+
         }
     }
 
